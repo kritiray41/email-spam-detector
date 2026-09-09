@@ -1,28 +1,53 @@
+# AI Email Spam & Phishing Detector
 
-# 📧 End-to-End AI Email Spam Detector
+An offline-capable, context-aware machine learning application designed to detect modern spear-phishing and Business Email Compromise (BEC). This project has been upgraded from a basic TF-IDF/SVM baseline to a sophisticated hybrid neural network pipeline.
 
-An end-to-end Machine Learning web application that classifies email and SMS messages into **Ham (Legitimate)** or **Spam** using Natural Language Processing (NLP), Scikit-Learn, and Streamlit.
+## Model Architecture
 
----
+This application utilizes a **Hybrid ML Pipeline** to balance deep semantic understanding with extreme tabular efficiency:
+* **Feature Extraction:** A frozen `distilbert-base-uncased` transformer processes the raw email text and outputs a 768-dimensional semantic embedding array.
+* **Classification:** An XGBoost (Gradient Boosting) classifier evaluates the dense numerical representations to draw hard, non-linear decision boundaries, preventing majority features ("corporate speak") from washing out high-signal minority features (urgency, masked links).
+* **Preprocessing:** Custom URL defanging (e.g., converting `[.]` to `.`) and masking (tokenizing as `<URL>`) is applied prior to inference to prevent feature collapse.
 
-## 📌 Project Overview
-Unsolicited commercial emails pose significant security risks, including phishing and malware. This project implements a full ML pipeline—from text preprocessing and TF-IDF vectorization to model evaluation, web deployment, and containerization.
+##  Repository Structure
 
-Given the class imbalance in spam datasets (~87% Ham vs ~13% Spam), the model prioritizes **Precision** to ensure legitimate emails are never falsely flagged as spam.
+* `app.py`: The main Streamlit web application.
+* `src/predict.py`: Handles model loading, embedding extraction, and XGBoost inference.
+* `src/preprocess.py`: Contains regex logic for URL masking and text defanging.
+* `models/`: Directory for the downloaded Hugging Face and XGBoost artifacts (Ignored by Git due to size limits).
+* `requirements.txt`: Project dependencies.
 
----
+*(Note: Model training and dataset blending are handled externally via Google Colab to leverage GPU acceleration.)*
 
-## 🛠️ Tech Stack & Tools
-- **Language:** Python 3.10+
-- **NLP & Preprocessing:** NLTK, Regular Expressions (Regex)
-- **Machine Learning:** Scikit-Learn (Multinomial Naive Bayes, Logistic Regression, Support Vector Machines)
-- **Web Interface:** Streamlit
-- **Serialization & Utility:** Joblib, Pandas, NumPy
-- **Containerization:** Docker
+## Setup & Installation
 
----
+**1. Clone the repository**
+```bash
+git clone [https://github.com/kritiray41/email-spam-detector.git](https://github.com/kritiray41/email-spam-detector.git)
+cd email-spam-detector
+```
 
-## ⚙️ Architecture & Pipeline
+**2. Create and activate a virtual environment**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
 
-```text
-Raw Email Data ➡️ Text Preprocessing ➡️ TF-IDF Vectorization ➡️ ML Classifier ➡️ Streamlit App
+**3. Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+**4. Download Offline Model Artifacts**
+Because the `distilbert-base-uncased` safetensors exceed GitHub's standard file limits, the model weights are not included in this repository.
+
+* Extract your trained model zip file.
+* Place the contents (`config.json`, `model.safetensors`, `tokenizer.json`, `xgboost_spam.json`, etc.) directly into `models/offline_hybrid_model/`.
+
+**5. Run the Application**
+```bash
+streamlit run app.py
+```
+## 👤 Author
+**Kriti Ray**
+
